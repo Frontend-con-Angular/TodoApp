@@ -1,0 +1,56 @@
+<!-- <section>
+  <h1>{{title.toLocaleUpperCase()}}</h1>
+  <h2>{{parrafo}}</h2>
+  <ul>
+    <li *ngFor="let elem of tasks">
+      {{elem}}
+    </li>
+  </ul>
+</section>
+ -->
+<main class="main">
+  <div class="main__top"></div>
+  <section class="container">
+    <div class="todo">
+      <div class="todo__header">
+        <h1 class="todo__title">{{title}}</h1>
+        <h2 class="todo__subtitle">{{subtitle}}</h2>
+      </div>
+      <div class="todo__body">
+        <label class="todo__label">
+          <input type="text" [placeholder]="inputSearch" (keydown)="searchTask($event)">
+          <!-- <i class="bi bi-search" (click)="createTaskByClick($event)"></i> -->
+        </label>
+        <label class="todo__label">
+          <input type="text" [placeholder]="inputAddTask" (keydown.enter)="createTaskByEnter($event)">
+          <i class="bi bi-plus-lg" (click)="createTaskByClick($event)"></i>
+        </label>
+        <div class="todo__list">
+          <ul class="todo__items">
+            <li class="todo__item" *ngFor="let task of tasks(); index as position">
+              <div *ngIf="task[1]=='pending'; then inputCheck else inputUncheck">
+              </div>
+              <ng-template #inputCheck>
+                <input type="checkbox" (click)="changeStateTask(position, true)">
+              </ng-template>
+              <ng-template #inputUncheck>
+                <input type="checkbox" checked (click)="changeStateTask(position, false)">
+              </ng-template>
+              <input type="text" [value]="task[0]" (keydown.enter)="updateTask($event, position)" (blur)="restoreTask($event, position)">
+              <i class="bi bi-x-lg" (click)="deleteTask(position)"></i>
+            </li>
+          </ul>
+          <div class="todo__info">
+            <p class="todo__count">0 item left</p>
+            <div class="todo__state">
+              <button>All</button>
+              <button>Pending</button>
+              <button>Completed</button>
+            </div>
+            <button class="todo__clear-completed" (click)="clearAllTaskCompleted()">Clear completed</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
