@@ -129,6 +129,7 @@ export class HomeComponent {
         : { ...item, isEdited: false }
     ));
   };
+  
   //Eliminacion de tareas
   clearAllTaskCompleted(){
     this.tasks.update(tasks=>tasks.filter((item)=> item.state!==State.completing));
@@ -136,6 +137,7 @@ export class HomeComponent {
   deleteTask(id: Number){
     this.tasks.update(tasks=>tasks.filter((item)=>item.id!=id));
   };
+
   //Cambio de estado de tarea
   changeStateTask(id:Number, event: Event){
     const elementInput = event.target as HTMLInputElement;
@@ -152,12 +154,7 @@ export class HomeComponent {
       }
     ));
   };
-  //no funciona :"v
-/*   changeEditState(position: Number){
-    this.tasks.update(tasks=>tasks.map(
-      (item, pos)=> pos==position && !item.isEdited? {...item, isEdited: true}: {...item, isEdited: false}
-    ));
-  }; */
+
   //Adicionales auxiliares
   clearInputAdd(search: HTMLInputElement){
     search.value = '';
@@ -168,4 +165,7 @@ export class HomeComponent {
   changeStateFilter(state: State){
     this.filter.update(()=>state);
   };
+  totalCompletedTasks<Number>(){
+    return this.tasksFilter().filter(task => task.state == State.completing).length;
+  }
 }
