@@ -1,15 +1,9 @@
-<!-- <section>
-  <h1>{{title.toLocaleUpperCase()}}</h1>
-  <h2>{{parrafo}}</h2>
-  <ul>
-    <li *ngFor="let elem of tasks">
-      {{elem}}
-    </li>
-  </ul>
-</section>
- -->
 <main class="main">
-  <div class="main__top"></div>
+  <div class="main__top" [style.background-color]="colorCtrl.value"></div>
+  <div class="change-color">
+    <h3 class="change-color__title">Change color:</h3>
+    <input class="change-color__input" type="color" [formControl]="colorCtrl">
+  </div>
   <section class="container">
     <div class="todo">
       <div class="todo__header">
@@ -18,36 +12,59 @@
       </div>
       <div class="todo__body">
         <label class="todo__label">
-          <input type="text" [placeholder]="inputSearch" (keydown)="searchTask($event)">
-          <!-- <i class="bi bi-search" (click)="createTaskByClick($event)"></i> -->
+          <input type="text" [formControl]="searchCtrl" [placeholder]="inputSearch" (blur)="clearInputSearch()">
+          <i class="bi bi-search" (click)="createTaskByClick($event)"></i>
+          <p class="todo__error" [class.show]="searchCtrl.value.length<3 &&searchCtrl.value !=''">Nombre invalido</p>
         </label>
         <label class="todo__label">
           <input type="text" [placeholder]="inputAddTask" (keydown.enter)="createTaskByEnter($event)">
           <i class="bi bi-plus-lg" (click)="createTaskByClick($event)"></i>
         </label>
+<!--         <pre>
+          <code>
+            {{tasks() | json}}
+          </code>
+        </pre> -->
         <div class="todo__list">
           <ul class="todo__items">
-            <li class="todo__item" *ngFor="let task of tasks(); index as position">
-              <div *ngIf="task[1]=='pending'; then inputCheck else inputUncheck">
-              </div>
-              <ng-template #inputCheck>
-                <input type="checkbox" (click)="changeStateTask(position, true)">
-              </ng-template>
-              <ng-template #inputUncheck>
-                <input type="checkbox" checked (click)="changeStateTask(position, false)">
-              </ng-template>
-              <input type="text" [value]="task[0]" (keydown.enter)="updateTask($event, position)" (blur)="restoreTask($event, position)">
-              <i class="bi bi-x-lg" (click)="deleteTask(position)"></i>
+            <li
+              class="todo__item"
+              *ngFor="let task of tasksFilter(); index as position"
+              [class.completing]="task.state === State.completing"
+              [class.pending]="task.state === State.pending"
+              [class.editing]="task.isEdited"
+              >
+              <input
+                type="checkbox"
+                (click)="changeStateTask(task.id, $event)"
+                [checked]="task.state==State.completing?true:false">
+              <input
+                type="text"
+                [value]="task.title"
+                (keydown.enter)="updateTask($event, task.id)"
+                (blur)="restoreTask($event, task.id)"
+                >
+              <i class="bi bi-x-lg" (click)="deleteTask(task.id)"></i>
             </li>
           </ul>
           <div class="todo__info">
-            <p class="todo__count">0 item left</p>
+            <!-- <div class="todo__count">
+              <strong>{{tasks().length}}</strong>
+              <span *ngIf="tasks().length<=1; else muchosTasks"> item left</span>
+              <ng-template #muchosTasks>items left</ng-template>
+            </div> -->
+            <p class="todo__count" [ngSwitch]="true">
+              <span *ngSwitchCase="tasksFilter().length==1">Only 1 item</span>
+              <span *ngSwitchCase="tasksFilter().length==0">No items</span>
+              <span *ngSwitchCase="tasksFilter().length>1">{{tasksFilter().length}} items</span>
+              <span *ngSwitchDefault>Esto no deberia suceder</span>
+            </p>
             <div class="todo__state">
-              <button>All</button>
-              <button>Pending</button>
-              <button>Completed</button>
+              <button class="todo__button" [class.focus]="filter()==State.all" (click)="changeStateFilter(State.all)">All</button>
+              <button class="todo__button" [class.focus]="filter()==State.pending" (click)="changeStateFilter(State.pending)">Pending</button>
+              <button class="todo__button" [class.focus]="filter()==State.completing" (click)="changeStateFilter(State.completing)">Completed</button>
             </div>
-            <button class="todo__clear-completed" (click)="clearAllTaskCompleted()">Clear completed</button>
+            <button class="todo__button todo__button--clear" (click)="clearAllTaskCompleted()">Clear completed</button>
           </div>
         </div>
       </div>
