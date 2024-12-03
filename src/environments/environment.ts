@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  serverBasePath: 'http://localhost:3017/api/v1'
+  serverBasePath: 'https://taskwave-platform-production.up.railway.app/api/v1'
 };
