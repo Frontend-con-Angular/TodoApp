@@ -1,5 +1,6 @@
 <main class="main">
   <div class="main__top" [style.background-color]="colorCtrl.value"></div>
+  <button class="sign-out" mat-button (click)="logout()">Cerrar sesion</button>
   <div class="change-color">
     <h3 class="change-color__title">Change color:</h3>
     <input class="change-color__input" type="color" [formControl]="colorCtrl">
@@ -7,7 +8,7 @@
   <section class="container">
     <div class="todo">
       <div class="todo__header">
-        <h1 class="todo__title">{{title}}</h1>
+        <h1 class="todo__title">{{title}} {{userName()}}</h1>
         <h2 class="todo__subtitle">{{subtitle}}</h2>
       </div>
       <div class="todo__body">
@@ -18,18 +19,13 @@
           @else {
             <input type="text" readonly [formControl]="searchCtrl" [placeholder]="inputSearch" (blur)="clearInputSearch()">
           }
-          <i class="bi bi-search" (click)="createTaskByClick($event)"></i>
+          <i class="bi bi-search"></i>
           <p class="todo__error" [class.show]="searchCtrl.value.length<3 &&searchCtrl.value !=''">Nombre invalido</p>
         </label>
         <label class="todo__label">
-          <input type="text" [placeholder]="inputAddTask" (keydown.enter)="createTaskByEnter($event)">
-          <i class="bi bi-plus-lg" (click)="createTaskByClick($event)"></i>
+          <input type="text" [placeholder]="inputAddTask" [formControl]="newTask" (keydown.enter)="createTask()">
+          <i class="bi bi-plus-lg" (click)="createTask()"></i>
         </label>
-<!--         <pre>
-          <code>
-            {{tasks() | json}}
-          </code>
-        </pre> -->
         <div class="todo__list">
           <ul class="todo__items">
             @for(task of tasksFilter(); track task.id){
@@ -42,11 +38,11 @@
               <input
                 type="checkbox"
                 (click)="changeStateTask(task.id, $event)"
-                [checked]="task.state==State.completing?true:false">
+                [checked]="task.state==State.completing">
               <input
                 type="text"
                 [value]="task.title"
-                (keydown.enter)="updateTask($event, task.id)"
+                (keydown.enter)="updateTitleTask($event, task.id)"
                 (blur)="restoreTask($event, task.id)"
                 >
               <i class="bi bi-x-lg" (click)="deleteTask(task.id)"></i>
@@ -57,13 +53,13 @@
               <p class="todo__count">
                 @switch (true) {
                   @case (tasksFilter().length==0){
-                    <span>No items</span>
+                    <span>Ninguna tarea</span>
                   }
                   @case (tasksFilter().length==1){
-                    <span>One item</span>
+                    <span>1 tarea </span>
                   }
                   @case (tasksFilter().length>1){
-                    <span>{{tasksFilter().length}} items</span>
+                    <span>{{tasksFilter().length}} tareas</span>
                   }
                   @default {
                     <span>Esto no deberia suceder</span>
@@ -71,9 +67,9 @@
                 }
               </p>
               <div class="todo__state">
-                <button class="todo__button" [class.focus]="filter()==State.all" (click)="changeStateFilter(State.all)">All</button>
-                <button class="todo__button" [class.focus]="filter()==State.pending" (click)="changeStateFilter(State.pending)">Pending</button>
-                <button class="todo__button" [class.focus]="filter()==State.completing" (click)="changeStateFilter(State.completing)">Completed</button>
+                <button class="todo__button" [class.focus]="filter()==State.all" (click)="changeStateFilter(State.all)">Todas</button>
+                <button class="todo__button" [class.focus]="filter()==State.pending" (click)="changeStateFilter(State.pending)">Pendientes</button>
+                <button class="todo__button" [class.focus]="filter()==State.completing" (click)="changeStateFilter(State.completing)">Completadas</button>
               </div>
               @if (totalCompletedTasks() != 0){
                 <button class="todo__button todo__button--clear" (click)="clearAllTaskCompleted()">Clear completed</button>
